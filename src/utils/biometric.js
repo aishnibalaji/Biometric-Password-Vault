@@ -1,11 +1,15 @@
-//biometric authentication 
+/* eslint-disable no-undef */
 export class BiometricAuth {
   async isSupported() {
     if (!window.PublicKeyCredential) {
       return false;
     }
     
-    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    try {
+      return await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    } catch {
+      return false;
+    }
   }
 
   async authenticate() {
@@ -15,7 +19,7 @@ export class BiometricAuth {
           challenge: window.crypto.getRandomValues(new Uint8Array(32)),
           rp: {
             name: "Password Vault",
-            id: window.location.hostname,
+            id: window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname,
           },
           user: {
             id: window.crypto.getRandomValues(new Uint8Array(64)),
